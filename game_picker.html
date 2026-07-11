@@ -11,7 +11,7 @@
     --ink:#e8e4f0; --sub:#9a93b0; --faint:#6b6482;
     --amber:#ffb347;
     --rS:#ffb347; --rA:#e05cc8; --rB:#8bd45a; --rC:#4a9ae0; --rD:#7a7488;
-    --pick:#7b6cf0;
+    --pick:#7b6cf0; --hide:#c56b6b; --adopt:#5db3b0;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
@@ -36,26 +36,33 @@
 
   .steps{display:flex;gap:6px;margin:14px 0 10px}
   .step{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--sub);
-    padding:9px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:center;transition:.15s}
+    padding:9px 4px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:.15s}
   .step.on{background:var(--panel2);border-color:var(--amber);color:var(--amber)}
   .step .n{display:block;font-size:10px;font-weight:500;color:var(--faint);margin-top:1px}
-  .step.on .n{color:var(--sub)}
 
   .controls{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:12px}
   .crow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .crow+.crow{margin-top:8px}
-  .clabel{font-size:10px;color:var(--faint);font-weight:700;letter-spacing:.08em;margin-right:2px;align-self:center}
+  .clabel{font-size:10px;color:var(--faint);font-weight:700;letter-spacing:.08em;margin-right:2px}
   .chip{background:var(--panel2);border:1px solid var(--line);color:var(--sub);
     padding:5px 10px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:.15s;white-space:nowrap}
   .chip.on{border-color:var(--amber);color:var(--amber)}
-  .chip.g.on{border-color:var(--pick);color:#b9aef5}
-  .count{margin-left:auto;font-size:11.5px;color:var(--faint);white-space:nowrap;align-self:center}
+  .chip.g{border-color:var(--line);color:var(--faint);text-decoration:line-through;opacity:.6}
+  .chip.g.on{border-color:var(--adopt);color:var(--adopt);text-decoration:none;opacity:1}
+  .chip.dir{min-width:44px;text-align:center}
+  .chip.hidebtn.on{border-color:var(--hide);color:var(--hide)}
+  .count{margin-left:auto;font-size:11.5px;color:var(--faint);white-space:nowrap}
+  .hidenote{font-size:11px;color:var(--hide);margin-top:7px;display:none}
+  .hidenote.show{display:block}
 
   .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
   .tile{background:var(--panel);border:2px solid transparent;border-radius:10px;overflow:hidden;
     cursor:pointer;transition:.12s;position:relative}
   .tile:hover{border-color:var(--line)}
   .tile.picked{border-color:var(--pick);box-shadow:0 0 0 1px var(--pick)}
+  .tile.ghost{opacity:.35}
+  .tile.ghost.markhide{opacity:.7;border-color:var(--hide);box-shadow:0 0 0 1px var(--hide)}
+  .tile.markhide{border-color:var(--hide);box-shadow:0 0 0 1px var(--hide)}
   .tile .media{position:relative;aspect-ratio:460/215;background:var(--panel2)}
   .tile .media img{width:100%;height:100%;object-fit:cover;display:block}
   .tile .media video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
@@ -73,16 +80,21 @@
     background:rgba(18,16,26,.85);border:1.5px solid var(--line);display:flex;align-items:center;
     justify-content:center;font-size:12px;color:transparent;z-index:2}
   .tile.picked .check{background:var(--pick);border-color:var(--pick);color:#fff}
+  .tile.markhide .check{background:var(--hide);border-color:var(--hide);color:#fff}
   .tile .rk{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;color:#12101a;
     padding:1px 6px;border-radius:5px;display:none;z-index:2}
   .tile.ranked .rk{display:block}
+  .tile .steamlink{padding:0 8px 8px;font-size:11px}
+  .tile .steamlink a{color:#8fb8e8;text-decoration:none}
 
-  .ranks{display:flex;gap:4px;padding:0 8px 9px}
+  .ranks{display:flex;gap:4px;padding:0 8px 8px}
   .rb{flex:1;padding:6px 0;border-radius:7px;border:1px solid var(--line);background:var(--panel2);
     color:var(--sub);font-size:12px;font-weight:800;cursor:pointer;transition:.1s}
   .rb.on{color:#12101a}
-  .tsteam{padding:0 8px 9px;font-size:11px}
-  .tsteam a{color:#8fb8e8;text-decoration:none}
+  .adoptrow{padding:0 8px 9px}
+  .ab{width:100%;padding:7px 0;border-radius:8px;border:1px solid var(--adopt);background:var(--panel2);
+    color:var(--adopt);font-size:11.5px;font-weight:700;cursor:pointer;transition:.1s}
+  .ab.on{background:var(--adopt);color:#12101a}
 
   .acts{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
   .act{flex:1;min-width:130px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
@@ -99,7 +111,7 @@
 <body>
 <header>
   <h1><span class="dot"></span>ゲーム選定ツール</h1>
-  <div class="tag">① 画像で拾う → ② 動画で決める。ランクの一番高い1本が今週の候補。</div>
+  <div class="tag">① 画像で拾う → ② 動画で決める → ③ 本採用。</div>
 </header>
 
 <div id="loader">
@@ -117,6 +129,7 @@
   <div class="steps">
     <button class="step on" data-step="1">① 画像で拾う<span class="n" id="n1">0本</span></button>
     <button class="step" data-step="2">② 動画で決める<span class="n" id="n2">0本</span></button>
+    <button class="step" data-step="3">③ 本採用<span class="n" id="n3">0本</span></button>
   </div>
 
   <div class="controls">
@@ -128,27 +141,30 @@
       <button class="chip" data-f="solo">ソロ可</button>
       <button class="chip" data-f="soon">発売前</button>
       <button class="chip" data-f="video">動画あり</button>
+      <button class="chip hidebtn" id="hidebtn">非表示モード</button>
     </div>
     <div class="crow" id="genres"><span class="clabel">ジャンル</span></div>
     <div class="crow">
       <span class="clabel">並び</span>
-      <button class="chip sort on" data-s="default">おすすめ順</button>
-      <button class="chip sort" data-s="date">発売日</button>
-      <button class="chip sort" data-s="rev">レビュー少</button>
+      <button class="chip sort" data-s="default">おすすめ</button>
+      <button class="chip sort on" data-s="date">発売日</button>
+      <button class="chip sort" data-s="rev">レビュー数</button>
       <button class="chip sort" data-s="price">価格</button>
       <button class="chip sort" data-s="rank">ランク</button>
+      <button class="chip dir" id="dirbtn">▼ 降順</button>
       <span class="count" id="count"></span>
     </div>
+    <div class="hidenote" id="hidenote">非表示モード中：タイルをタップすると非表示の対象になります。薄いタイルは現在非表示のもの（タップで戻せます）。もう一度「非表示モード」を押すと確定します。</div>
   </div>
 
   <div class="tiles" id="tiles"></div>
 
   <div class="acts">
-    <button class="act pri" id="ics">⤓ ランク付けを .ics で書き出す</button>
+    <button class="act pri" id="ics">⤓ 採用分を .ics で書き出す</button>
     <button class="act" id="reload">最新を読み直す</button>
     <button class="act" id="clear">判定をリセット</button>
   </div>
-  <div class="hint">判定はこのブラウザに保存されます。②で動画をタップすると再生、S〜Dでランク付け。</div>
+  <div class="hint">判定・非表示・採用はこのブラウザに保存されます。</div>
 </div>
 
 <script>
@@ -156,14 +172,17 @@ const RANKS = {S:"var(--rS)", A:"var(--rA)", B:"var(--rB)", C:"var(--rC)", D:"va
 const ORDER = {S:5, A:4, B:3, C:2, D:1};
 const KEY = "yuwasu_game_picks_v2";
 const GKEY = "yuwasu_gist_id";
+const GENKEY = "yuwasu_genres_off";
 
 let GAMES = [];
 let state = load();
-let step = 1, filter = "all", genre = "all", sort = "default";
+let step = 1, filter = "all", sort = "date", dir = "desc", hideMode = false;
+let offGenres = new Set(JSON.parse(localStorage.getItem(GENKEY) || "[]"));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
-function st(id){ if(!state[id]) state[id] = {picked:false, rank:null}; return state[id]; }
+function saveGen(){ try{ localStorage.setItem(GENKEY, JSON.stringify([...offGenres])); }catch(e){} }
+function st(id){ if(!state[id]) state[id] = {picked:false, rank:null, hidden:false, adopted:false}; return state[id]; }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
 /* ---------- Gist ---------- */
@@ -197,19 +216,33 @@ document.getElementById("load").onclick = async () => {
 };
 if(gid.value.trim()) document.getElementById("load").click();
 
-/* ---------- タブ・絞り込み・並び ---------- */
+/* ---------- タブ・コントロール ---------- */
 document.querySelectorAll(".step").forEach(b => {
-  b.onclick = () => { step = +b.dataset.step;
+  b.onclick = () => { step = +b.dataset.step; hideMode = false; syncHideUI();
     document.querySelectorAll(".step").forEach(x => x.classList.toggle("on", x===b)); render(); };
 });
-document.querySelectorAll("#filters .chip").forEach(c => {
+document.querySelectorAll("#filters .chip[data-f]").forEach(c => {
   c.onclick = () => { filter = c.dataset.f;
-    document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x===c)); render(); };
+    document.querySelectorAll("#filters .chip[data-f]").forEach(x => x.classList.toggle("on", x===c)); render(); };
 });
 document.querySelectorAll(".sort").forEach(c => {
   c.onclick = () => { sort = c.dataset.s;
     document.querySelectorAll(".sort").forEach(x => x.classList.toggle("on", x===c)); render(); };
 });
+const dirbtn = document.getElementById("dirbtn");
+dirbtn.onclick = () => { dir = (dir==="desc") ? "asc" : "desc";
+  dirbtn.textContent = dir==="desc" ? "▼ 降順" : "▲ 昇順"; render(); };
+
+const hidebtn = document.getElementById("hidebtn");
+hidebtn.onclick = () => {
+  if(step !== 1){ alert("非表示は①のタブで使います。"); return; }
+  hideMode = !hideMode; syncHideUI(); render();
+};
+function syncHideUI(){
+  hidebtn.classList.toggle("on", hideMode);
+  hidebtn.textContent = hideMode ? "非表示を確定" : "非表示モード";
+  document.getElementById("hidenote").classList.toggle("show", hideMode);
+}
 
 function buildGenres(){
   const counts = {};
@@ -217,68 +250,93 @@ function buildGenres(){
   const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]);
   const box = document.getElementById("genres");
   box.querySelectorAll(".chip").forEach(x=>x.remove());
-  const mk = (val,label) => {
+  top.forEach(name => {
     const b = document.createElement("button");
-    b.className = "chip g" + (val==="all"?" on":""); b.dataset.g = val; b.textContent = label;
-    b.onclick = () => { genre = val;
-      box.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on", x===b)); render(); };
+    b.className = "chip g" + (offGenres.has(name) ? "" : " on");
+    b.textContent = name;
+    b.onclick = () => {
+      if(offGenres.has(name)) offGenres.delete(name); else offGenres.add(name);
+      b.classList.toggle("on", !offGenres.has(name));
+      saveGen(); render();
+    };
     box.appendChild(b);
-  };
-  mk("all","すべて"); top.forEach(x=>mk(x,x));
+  });
 }
 
-/* ---------- 絞り込みロジック ---------- */
+/* ---------- 絞り込み・並べ替え ---------- */
 function passFilter(g){
   if(filter==="demo" && !g.demo) return false;
   if(filter==="indie" && !g.self_published) return false;
   if(filter==="solo" && !g.solo) return false;
   if(filter==="soon" && !g.coming_soon) return false;
   if(filter==="video" && !g.trailer) return false;
-  if(genre!=="all" && !(g.genres||[]).includes(genre)) return false;
+  const gs = g.genres||[];
+  if(gs.some(x => offGenres.has(x))) return false;
   return true;
 }
 function sortList(list){
-  const s = sort;
   const arr = [...list];
-  if(s==="date") arr.sort((a,b)=>(b.release_date||"0")<(a.release_date||"0")?-1:1);
-  else if(s==="rev") arr.sort((a,b)=>(a.recommendations||0)-(b.recommendations||0));
-  else if(s==="price") arr.sort((a,b)=>(a.price||0)-(b.price||0));
-  else if(s==="rank") arr.sort((a,b)=>(ORDER[st(b.appid).rank]||0)-(ORDER[st(a.appid).rank]||0));
-  // default はスクリプトの並び順のまま
+  const m = dir==="desc" ? 1 : -1;
+  if(sort==="date"){
+    arr.sort((a,b)=>{
+      const da=a.release_date, db=b.release_date;
+      if(!da && !db) return 0;
+      if(!da) return 1;              // 日付なし（発売前）は常に末尾
+      if(!db) return -1;
+      return da<db ? m : da>db ? -m : 0;
+    });
+  }
+  else if(sort==="rev") arr.sort((a,b)=>m*((b.recommendations||0)-(a.recommendations||0)));
+  else if(sort==="price") arr.sort((a,b)=>m*((b.price||0)-(a.price||0)));
+  else if(sort==="rank") arr.sort((a,b)=>m*((ORDER[st(b.appid).rank]||0)-(ORDER[st(a.appid).rank]||0)));
+  else if(dir==="asc") arr.reverse();   // おすすめ順の昇順＝逆順
   return arr;
 }
 
 /* ---------- 描画 ---------- */
-function render(){
-  const picked = GAMES.filter(g => st(g.appid).picked);
+function updateCounts(){
+  const picked = GAMES.filter(g => st(g.appid).picked && !st(g.appid).hidden);
+  const adopted = GAMES.filter(g => st(g.appid).adopted);
   document.getElementById("n1").textContent = GAMES.length + "本";
   document.getElementById("n2").textContent = picked.length + "本";
+  document.getElementById("n3").textContent = adopted.length + "本";
+}
+function render(){
+  updateCounts();
+  hidebtn.style.display = (step===1) ? "" : "none";
+  const picked = GAMES.filter(g => st(g.appid).picked && !st(g.appid).hidden);
+  const adopted = GAMES.filter(g => st(g.appid).adopted);
 
-  const base = step===1 ? GAMES : picked;
+  let base;
+  if(step===1) base = hideMode ? GAMES : GAMES.filter(g => !st(g.appid).hidden);
+  else if(step===2) base = picked;
+  else base = adopted;
+
   const list = sortList(base.filter(passFilter));
   document.getElementById("count").textContent = list.length + " / " + base.length + "本";
 
   const box = document.getElementById("tiles");
   if(!list.length){
     box.innerHTML = '<div class="empty">' +
-      (step===2 && !picked.length ? '①で気になったタイルをタップして拾ってください。' : '該当なし') + '</div>';
+      (step===2 ? '①で気になったタイルをタップして拾ってください。' :
+       step===3 ? '②で「採用」を押すと、ここに並びます。' : '該当なし') + '</div>';
     return;
   }
-  box.innerHTML = list.map(g => tileHTML(g, step===2)).join("");
-  bindTiles(step===2);
+  box.innerHTML = list.map(g => tileHTML(g)).join("");
+  bindTiles();
 }
 
-function tileHTML(g, detail){
+function tileHTML(g){
   const s = st(g.appid);
   const cls = ["tile"];
-  if(s.picked) cls.push("picked");
+  if(step===1 && s.picked && !hideMode) cls.push("picked");
   if(s.rank) cls.push("ranked");
+  if(hideMode && s.hidden) cls.push("ghost","markhide");
   const rk = '<span class="rk"' + (s.rank?' style="background:'+RANKS[s.rank]+'"':'') + '>' + (s.rank||"") + '</span>';
-  const poster = g.thumb || g.header || "";
-  // ②で動画ありなら、data属性に持たせてタップで差し替え
-  const media = '<div class="media" data-trailer="' + esc(detail && g.trailer ? g.trailer : "") + '" data-type="' + esc(g.trailer_type||"") + '">' +
-    '<img src="' + esc(g.header||poster) + '" loading="lazy" onerror="this.style.opacity=.15">' +
-    (detail && g.trailer ? '<div class="play"></div>' : '') + '</div>';
+  const showVideo = (step===2 || step===3) && g.trailer;
+  const media = '<div class="media" data-trailer="' + esc(showVideo ? g.trailer : "") + '">' +
+    '<img src="' + esc(g.header || g.thumb || "") + '" loading="lazy" onerror="this.style.opacity=.15">' +
+    (showVideo ? '<div class="play"></div>' : '') + '</div>';
   const fx = [];
   if(g.self_published) fx.push('<span class="indie">個人</span>');
   if(g.demo) fx.push('<span class="demo">体験版</span>');
@@ -288,66 +346,136 @@ function tileHTML(g, detail){
   fx.push('<span>' + esc(g.price_text) + '</span>');
   fx.push('<span>' + (g.coming_soon?"発売前":(g.release_date||"?")) + '</span>');
   let extra = "";
-  if(detail){
+  if(step===2){
     extra = '<div class="ranks">' +
       Object.keys(RANKS).map(r => '<button class="rb' + (s.rank===r?' on':'') + '" data-id="' + g.appid + '" data-r="' + r + '"' +
         (s.rank===r?' style="background:'+RANKS[r]+';border-color:'+RANKS[r]+'"':'') + '>' + r + '</button>').join("") +
       '</div>' +
-      '<div class="tsteam"><a href="' + esc(g.url) + '" target="_blank" rel="noopener">Steamで見る ↗</a></div>';
+      '<div class="adoptrow"><button class="ab' + (s.adopted?' on':'') + '" data-id="' + g.appid + '">' +
+      (s.adopted?'✓ 採用済み':'⭐ 採用する') + '</button></div>';
+  } else if(step===3){
+    extra = '<div class="adoptrow"><button class="ab on" data-id="' + g.appid + '">採用を外す</button></div>';
   }
+  const steam = '<div class="steamlink"><a href="' + esc(g.url) + '" target="_blank" rel="noopener">Steam ↗</a></div>';
   return '<div class="' + cls.join(' ') + '" data-id="' + g.appid + '">' +
-    media + rk + '<div class="check">✓</div>' +
+    media + rk + '<div class="check">' + (hideMode?'✕':'✓') + '</div>' +
     '<div class="body"><div class="nm">' + esc(g.name) + '</div><div class="fx">' + fx.join("") + '</div></div>' +
-    extra + '</div>';
+    extra + steam + '</div>';
 }
 
-function bindTiles(detail){
+/* ---------- 動画再生（Safari=直接 / その他=hls.js） ---------- */
+let hlsLoading = null;
+function loadHlsJs(){
+  if(window.Hls) return Promise.resolve();
+  if(hlsLoading) return hlsLoading;
+  hlsLoading = new Promise((ok, ng) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js";
+    sc.onload = ok; sc.onerror = ng;
+    document.head.appendChild(sc);
+  });
+  return hlsLoading;
+}
+function playTrailer(m, url){
+  const img = m.querySelector("img");
+  const poster = img ? img.src : "";
+  const orig = m.innerHTML;
+  const v = document.createElement("video");
+  v.controls = true; v.playsInline = true; v.poster = poster;
+  v.setAttribute("webkit-playsinline","");
+  const fail = () => { m.innerHTML = orig; };
+  const isHls = /\.m3u8/.test(url);
+  if(!isHls || v.canPlayType("application/vnd.apple.mpegurl")){
+    v.src = url;
+    v.onerror = fail;
+    m.innerHTML = ""; m.appendChild(v);
+    v.play().catch(()=>{});
+  } else {
+    loadHlsJs().then(() => {
+      if(!window.Hls || !Hls.isSupported()){ fail(); return; }
+      const h = new Hls();
+      h.on(Hls.Events.ERROR, (ev, data) => { if(data && data.fatal){ h.destroy(); fail(); } });
+      h.loadSource(url); h.attachMedia(v);
+      m.innerHTML = ""; m.appendChild(v);
+      v.play().catch(()=>{});
+    }).catch(fail);
+  }
+}
+function updateTileRank(tile, s){
+  if(!tile) return;
+  tile.classList.toggle("ranked", !!s.rank);
+  const rk = tile.querySelector(".rk");
+  if(rk){ rk.textContent = s.rank || ""; rk.style.background = s.rank ? RANKS[s.rank] : ""; }
+  tile.querySelectorAll(".rb").forEach(x => {
+    const on = s.rank === x.dataset.r;
+    x.classList.toggle("on", on);
+    x.style.background = on ? RANKS[x.dataset.r] : "";
+    x.style.borderColor = on ? RANKS[x.dataset.r] : "";
+  });
+  updateCounts();
+}
+
+function bindTiles(){
   const box = document.getElementById("tiles");
-  if(detail){
-    // メディアをタップ → 動画再生。ランクボタンは別処理
+  // Steamリンクはどのタブでも素通し（タイルのタップを止める）
+  box.querySelectorAll(".steamlink a").forEach(a => a.onclick = e => e.stopPropagation());
+
+  if(step===1){
+    box.querySelectorAll(".tile").forEach(t => {
+      t.onclick = () => {
+        const s = st(t.dataset.id);
+        if(hideMode){ s.hidden = !s.hidden; }
+        else { s.picked = !s.picked; if(!s.picked) s.rank = null; }
+        save(); render();
+      };
+    });
+  } else {
     box.querySelectorAll(".media").forEach(m => {
       m.onclick = (e) => {
         e.stopPropagation();
         const url = m.getAttribute("data-trailer");
         if(!url || m.querySelector("video")) return;
-        const type = m.getAttribute("data-type");
-        const v = document.createElement("video");
-        v.src = url; v.controls = true; v.autoplay = true; v.playsInline = true;
-        v.setAttribute("webkit-playsinline","");
-        m.innerHTML = ""; m.appendChild(v);
+        playTrailer(m, url);
       };
     });
     box.querySelectorAll(".rb").forEach(b => {
       b.onclick = (e) => { e.stopPropagation();
-        const s = st(b.dataset.id); s.rank = (s.rank===b.dataset.r)?null:b.dataset.r; save(); render(); };
+        const s = st(b.dataset.id);
+        s.rank = (s.rank===b.dataset.r)?null:b.dataset.r; save();
+        updateTileRank(b.closest(".tile"), s);
+      };
     });
-  } else {
-    // ①はタイル全体でピック
-    box.querySelectorAll(".tile").forEach(t => {
-      t.onclick = () => { const s = st(t.dataset.id); s.picked = !s.picked; if(!s.picked) s.rank=null; save(); render(); };
+    box.querySelectorAll(".ab").forEach(b => {
+      b.onclick = (e) => { e.stopPropagation();
+        const s = st(b.dataset.id); s.adopted = !s.adopted; save();
+        if(step===3){ render(); return; }
+        b.classList.toggle("on", s.adopted);
+        b.textContent = s.adopted ? "✓ 採用済み" : "⭐ 採用する";
+        updateCounts();
+      };
     });
   }
 }
 
 /* ---------- 書き出し・その他 ---------- */
 document.getElementById("ics").onclick = () => {
-  const ranked = GAMES.filter(g => st(g.appid).rank);
-  if(!ranked.length){ alert("ランクを付けたゲームがありません。"); return; }
+  const adopted = GAMES.filter(g => st(g.appid).adopted);
+  const target = adopted.length ? adopted : GAMES.filter(g => st(g.appid).rank);
+  if(!target.length){ alert("採用（またはランク付け）したゲームがありません。"); return; }
   const pad = n => String(n).padStart(2,"0");
   const now = new Date();
   const stamp = now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+"T000000Z";
   let ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//yuwasu//game-picks//JA\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:ゲーム候補\r\n";
-  ranked.sort((a,b)=>(ORDER[st(b.appid).rank])-(ORDER[st(a.appid).rank])).forEach(g => {
+  target.forEach(g => {
     if(!g.release_date) return;
     const d = g.release_date.replace(/-/g,"");
     const nx = new Date(g.release_date+"T00:00:00"); nx.setDate(nx.getDate()+1);
     const de = nx.getFullYear()+pad(nx.getMonth()+1)+pad(nx.getDate());
-    const r = st(g.appid).rank;
+    const r = st(g.appid).rank || "-";
     const desc = ["相性ランク: "+r,"発売日: "+g.release_date,"価格: "+g.price_text,
       "体験版: "+(g.demo?"あり":"なし"),
       "プレイ人数: "+[g.solo?"ソロ可":"",g.coop?"協力":"",g.multi?"マルチ":""].filter(Boolean).join("/"),
-      "開発: "+(g.developers||[]).join(", "),"レビュー数: "+(g.recommendations||0),
-      "Steam: "+g.url].join("\\n");
+      "開発: "+(g.developers||[]).join(", "),"Steam: "+g.url].join("\\n");
     ics += "BEGIN:VEVENT\r\nUID:steam-"+g.appid+"@yuwasu\r\nDTSTAMP:"+stamp+"\r\n";
     ics += "DTSTART;VALUE=DATE:"+d+"\r\nDTEND;VALUE=DATE:"+de+"\r\n";
     ics += "SUMMARY:【"+r+"】"+g.name.replace(/[,;\\]/g,m=>"\\"+m)+"\r\n";
@@ -364,7 +492,7 @@ document.getElementById("reload").onclick = () => {
   note("Gist IDを確認して「更新」を押してください。");
 };
 document.getElementById("clear").onclick = () => {
-  if(!confirm("付けた判定をすべて消します。よろしいですか。")) return;
+  if(!confirm("付けた判定・非表示・採用をすべて消します。よろしいですか。")) return;
   state = {}; save(); render();
 };
 </script>
