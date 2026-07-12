@@ -203,6 +203,11 @@
 
       <div class="sec">
         <div class="lb">人気タグ（オンで絞り込み）</div>
+        <div class="chips" id="tags"></div>
+      </div>
+
+      <div class="sec">
+        <div class="lb">ジャンル（オンで絞り込み）</div>
         <div class="chips" id="genres"></div>
       </div>
 
@@ -266,10 +271,12 @@ let GAMES = [];
 let state = load();
 let step = 1, filters = new Set(), sort = "date", dir = "desc", hideMode = false;
 let onTags = new Set(JSON.parse(localStorage.getItem(TAGKEY) || "[]"));
+let onGenres = new Set(JSON.parse(localStorage.getItem("yuwasu_genres_on") || "[]"));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
 function saveTags(){ try{ localStorage.setItem(TAGKEY, JSON.stringify([...onTags])); }catch(e){} }
+function saveGenres(){ try{ localStorage.setItem("yuwasu_genres_on", JSON.stringify([...onGenres])); }catch(e){} }
 function st(id){ if(!state[id]) state[id] = {picked:false, rank:null, hidden:false, adopted:false}; return state[id]; }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
@@ -344,22 +351,27 @@ function syncHideUI(){
   document.getElementById("hidenote").classList.toggle("show", hideMode);
 }
 
-function buildGenres(){
+function buildChips(boxId, keyField, activeSet, saver, limit){
   const counts = {};
-  GAMES.forEach(g => (g.tags||g.genres||[]).forEach(x => counts[x] = (counts[x]||0)+1));
-  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20).map(x=>x[0]);
-  const box = document.getElementById("genres");
+  GAMES.forEach(g => (g[keyField]||[]).forEach(x => counts[x] = (counts[x]||0)+1));
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,limit).map(x=>x[0]);
+  const box = document.getElementById(boxId);
   box.innerHTML = "";
+  if(!top.length){ box.innerHTML = '<span style="font-size:11px;color:var(--faint)">データなし</span>'; return; }
   top.forEach(name => {
     const b = document.createElement("button");
-    b.className = "chip" + (onTags.has(name) ? " on" : "");
+    b.className = "chip" + (activeSet.has(name) ? " on" : "");
     b.textContent = name;
     b.onclick = () => {
-      if(onTags.has(name)) onTags.delete(name); else onTags.add(name);
-      b.classList.toggle("on", onTags.has(name)); saveTags(); render();
+      if(activeSet.has(name)) activeSet.delete(name); else activeSet.add(name);
+      b.classList.toggle("on", activeSet.has(name)); saver(); render();
     };
     box.appendChild(b);
   });
+}
+function buildGenres(){
+  buildChips("tags", "tags", onTags, saveTags, 20);
+  buildChips("genres", "genres", onGenres, saveGenres, 12);
 }
 
 /* ---------- 絞り込み・並べ替え ---------- */
@@ -370,8 +382,12 @@ function passFilter(g){
   if(filters.has("soon") && !g.coming_soon) return false;
   if(filters.has("video") && !g.trailer) return false;
   if(onTags.size){
-    const gt = g.tags||g.genres||[];
+    const gt = g.tags||[];
     if(!gt.some(x => onTags.has(x))) return false;
+  }
+  if(onGenres.size){
+    const gg = g.genres||[];
+    if(!gg.some(x => onGenres.has(x))) return false;
   }
   return true;
 }
