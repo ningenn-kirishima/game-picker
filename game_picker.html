@@ -204,7 +204,7 @@
       </div>
 
       <div class="sec">
-        <div class="lb">ジャンル（消すと非表示）</div>
+        <div class="lb">人気タグ（消すと非表示）</div>
         <div class="chips" id="genres"></div>
       </div>
 
@@ -348,8 +348,8 @@ function syncHideUI(){
 
 function buildGenres(){
   const counts = {};
-  GAMES.forEach(g => (g.genres||[]).forEach(x => counts[x] = (counts[x]||0)+1));
-  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
+  GAMES.forEach(g => (g.tags||g.genres||[]).forEach(x => counts[x] = (counts[x]||0)+1));
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20).map(x=>x[0]);
   const box = document.getElementById("genres");
   box.innerHTML = "";
   top.forEach(name => {
@@ -371,7 +371,7 @@ function passFilter(g){
   if(filters.has("solo") && !g.solo) return false;
   if(filters.has("soon") && !g.coming_soon) return false;
   if(filters.has("video") && !g.trailer) return false;
-  if((g.genres||[]).some(x => offGenres.has(x))) return false;
+  if((g.tags||g.genres||[]).some(x => offGenres.has(x))) return false;
   return true;
 }
 function sortList(list){
