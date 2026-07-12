@@ -39,8 +39,10 @@
   #app.show{display:block}
   .layout{display:flex;align-items:flex-start;gap:16px;padding:14px;max-width:1200px;margin:0 auto;flex-direction:row-reverse}
   .sidebar{width:var(--sbw);flex:none;position:sticky;top:14px;
-    max-height:calc(100vh - 28px);overflow-y:auto;
+    height:calc(100vh - 28px);display:flex;flex-direction:column;overflow:hidden;
     background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px}
+  .sidebar-scroll{flex:1;min-height:0;overflow-y:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:2px 0}
+  .sidebar-pin{flex:none}
   .main{flex:1;min-width:0}
 
   .sbtitle{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;margin-bottom:12px}
@@ -155,7 +157,7 @@
     .menubtn{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
       padding:7px 13px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
     .sidebar{position:fixed;right:0;top:0;bottom:0;width:min(320px,86vw);border-radius:0;z-index:40;
-      max-height:100vh;transform:translateX(100%);transition:transform .2s}
+      height:100vh;transform:translateX(100%);transition:transform .2s}
     .sidebar.open{transform:translateX(0)}
     .backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30}
     .backdrop.show{display:block}
@@ -187,17 +189,20 @@
   <div class="backdrop" id="backdrop"></div>
   <div class="layout">
     <aside class="sidebar" id="sidebar">
-      <div class="sbtitle"><span class="dot"></span>操作</div>
+      <div class="sidebar-pin">
+        <div class="sbtitle"><span class="dot"></span>操作</div>
 
-      <div class="sec">
-        <div class="lb">ステップ</div>
-        <div class="steps">
-          <button class="step on" data-step="1">① 画像で拾う<span class="n" id="n1">0</span></button>
-          <button class="step" data-step="2">② 動画で決める<span class="n" id="n2">0</span></button>
-          <button class="step" data-step="3">③ 本採用<span class="n" id="n3">0</span></button>
+        <div class="sec">
+          <div class="lb">ステップ</div>
+          <div class="steps">
+            <button class="step on" data-step="1">① 画像で拾う<span class="n" id="n1">0</span></button>
+            <button class="step" data-step="2">② 動画で決める<span class="n" id="n2">0</span></button>
+            <button class="step" data-step="3">③ 本採用<span class="n" id="n3">0</span></button>
+          </div>
         </div>
       </div>
 
+      <div class="sidebar-scroll">
       <div class="sec">
         <div class="lb">キーワード検索</div>
         <input class="searchbox" id="search" type="text" placeholder="作品名で絞り込み" autocomplete="off">
@@ -242,8 +247,9 @@
         <button class="hidebtn" id="hidebtn">非表示モード</button>
         <div class="hidenote" id="hidenote">タイルをタップで非表示対象に。もう一度このボタンで確定。一覧下部の「非表示中」から戻せます。</div>
       </div>
+      </div>
 
-      <div class="sec">
+      <div class="sec sidebar-pin">
         <div class="lb">書き出し・管理</div>
         <button class="sbact pri" id="ics">採用分を .ics で書き出す</button>
         <button class="sbact" id="reload">最新を読み直す</button>
