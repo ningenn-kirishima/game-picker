@@ -12,60 +12,86 @@
     --amber:#ffb347;
     --rS:#ffb347; --rA:#e05cc8; --rB:#8bd45a; --rC:#4a9ae0; --rD:#7a7488;
     --pick:#7b6cf0; --hide:#c56b6b; --adopt:#5db3b0;
+    --sbw:250px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{background:var(--bg);color:var(--ink);
     font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,-apple-system,sans-serif;
-    line-height:1.5;padding:14px;max-width:960px;margin:0 auto;-webkit-font-smoothing:antialiased}
-  header{margin-bottom:12px}
-  h1{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
-  h1 .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber)}
-  .tag{color:var(--sub);font-size:12px;margin-top:3px}
+    line-height:1.5;-webkit-font-smoothing:antialiased}
 
-  .gist{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0 10px}
+  /* 読み込み画面 */
+  #loader{max-width:560px;margin:40px auto;padding:14px}
+  #loader h1{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  #loader h1 .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+  .gist{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
   .glabel{font-size:11px;color:var(--faint);letter-spacing:.1em;font-weight:700;margin-bottom:7px}
   .grow{display:flex;gap:7px}
   .grow input{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
     padding:11px 12px;border-radius:10px;font-size:13px;font-family:ui-monospace,Menlo,monospace}
   .grow input:focus{outline:none;border-color:var(--amber)}
-  .grow .act{flex:none;min-width:80px}
   .gnote{font-size:11.5px;color:var(--faint);margin-top:8px}
   .gnote.err{color:#e08a8a}.gnote.ok{color:var(--rB)}
   #loader.hidden{display:none}
 
-  .steps{display:flex;gap:6px;margin:14px 0 10px}
-  .step{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--sub);
-    padding:9px 4px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:.15s}
-  .step.on{background:var(--panel2);border-color:var(--amber);color:var(--amber)}
-  .step .n{display:block;font-size:10px;font-weight:500;color:var(--faint);margin-top:1px}
+  /* レイアウト：サイドバー + 一覧 */
+  #app{display:none}
+  #app.show{display:block}
+  .layout{display:flex;align-items:flex-start;gap:16px;padding:14px;max-width:1200px;margin:0 auto;flex-direction:row-reverse}
+  .sidebar{width:var(--sbw);flex:none;position:sticky;top:14px;
+    max-height:calc(100vh - 28px);overflow-y:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px}
+  .main{flex:1;min-width:0}
 
-  .controls{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-bottom:12px}
-  .crow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-  .crow+.crow{margin-top:8px}
-  .clabel{font-size:10px;color:var(--faint);font-weight:700;letter-spacing:.08em;margin-right:2px}
+  .sbtitle{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+  .sbtitle .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+  .sec{margin-bottom:16px}
+  .sec > .lb{font-size:10px;color:var(--faint);font-weight:700;letter-spacing:.1em;margin-bottom:7px;text-transform:uppercase}
+
+  .steps{display:flex;flex-direction:column;gap:5px}
+  .step{background:var(--panel2);border:1px solid var(--line);color:var(--sub);
+    padding:9px 11px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:left;
+    display:flex;justify-content:space-between;align-items:center;transition:.15s}
+  .step.on{border-color:var(--amber);color:var(--amber)}
+  .step .n{font-size:10px;font-weight:500;color:var(--faint)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chip{background:var(--panel2);border:1px solid var(--line);color:var(--sub);
     padding:5px 10px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:.15s;white-space:nowrap}
   .chip.on{border-color:var(--amber);color:var(--amber)}
-  .chip.g{border-color:var(--line);color:var(--faint);text-decoration:line-through;opacity:.6}
-  .chip.g.on{border-color:var(--adopt);color:var(--adopt);text-decoration:none;opacity:1}
-  .chip.dir{min-width:44px;text-align:center}
-  .chip.hidebtn.on{border-color:var(--hide);color:var(--hide)}
-  .count{margin-left:auto;font-size:11.5px;color:var(--faint);white-space:nowrap}
+  .chip.g{opacity:.5;text-decoration:line-through}
+  .chip.g.on{border-color:var(--adopt);color:var(--adopt);opacity:1;text-decoration:none}
+  .sortline{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .dirbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer}
+  .dirbtn:hover{border-color:var(--amber);color:var(--amber)}
+  .hidebtn{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--sub);
+    padding:9px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+  .hidebtn.on{border-color:var(--hide);color:var(--hide)}
   .hidenote{font-size:11px;color:var(--hide);margin-top:7px;display:none}
   .hidenote.show{display:block}
 
+  .sbact{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    padding:9px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;margin-top:6px;transition:.15s}
+  .sbact:hover{border-color:var(--amber);color:var(--amber)}
+  .sbact.pri{background:var(--amber);color:#1a140a;border-color:var(--amber)}
+  .sbact.pri:hover{filter:brightness(1.08)}
+
+  /* ハンバーガー（狭い画面） */
+  .topbar{display:none}
+
+  /* 一覧 */
+  .mainhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .mainhead .t{font-size:15px;font-weight:800}
+  .mainhead .c{font-size:11.5px;color:var(--faint)}
   .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
   .tile{background:var(--panel);border:2px solid transparent;border-radius:10px;overflow:hidden;
     cursor:pointer;transition:.12s;position:relative}
   .tile:hover{border-color:var(--line)}
   .tile.picked{border-color:var(--pick);box-shadow:0 0 0 1px var(--pick)}
-  .tile.ghost{opacity:.35}
-  .tile.ghost.markhide{opacity:.7;border-color:var(--hide);box-shadow:0 0 0 1px var(--hide)}
   .tile.markhide{border-color:var(--hide);box-shadow:0 0 0 1px var(--hide)}
   .tile .media{position:relative;aspect-ratio:460/215;background:var(--panel2)}
   .tile .media img{width:100%;height:100%;object-fit:cover;display:block}
-  .tile .media video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
   .tile .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
     width:34px;height:34px;border-radius:50%;background:rgba(18,16,26,.7);border:1.5px solid rgba(255,255,255,.5);
     display:flex;align-items:center;justify-content:center;pointer-events:none}
@@ -86,7 +112,6 @@
   .tile.ranked .rk{display:block}
   .tile .steamlink{padding:0 8px 8px;font-size:11px}
   .tile .steamlink a{color:#8fb8e8;text-decoration:none}
-
   .ranks{display:flex;gap:4px;padding:0 8px 8px}
   .rb{flex:1;padding:6px 0;border-radius:7px;border:1px solid var(--line);background:var(--panel2);
     color:var(--sub);font-size:12px;font-weight:800;cursor:pointer;transition:.1s}
@@ -96,75 +121,139 @@
     color:var(--adopt);font-size:11.5px;font-weight:700;cursor:pointer;transition:.1s}
   .ab.on{background:var(--adopt);color:#12101a}
 
-  .acts{display:flex;gap:8px;margin:18px 0 6px;flex-wrap:wrap}
-  .act{flex:1;min-width:130px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
-    padding:11px;border-radius:10px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;
-    display:flex;align-items:center;justify-content:center;gap:6px}
-  .act:hover{border-color:var(--amber);color:var(--amber)}
-  .act.pri{background:var(--amber);color:#1a140a;border-color:var(--amber)}
-  .act.pri:hover{filter:brightness(1.08);color:#1a140a}
-  .hint{font-size:11.5px;color:var(--faint);margin-top:5px}
+  /* 非表示セクション */
+  .hidesec{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
+  .hidesec .lb{font-size:12px;color:var(--hide);font-weight:700;margin-bottom:10px}
+
   .empty{color:var(--faint);font-size:13px;text-align:center;padding:32px 0}
+
+  /* 動画ポップアップ */
+  .modal{position:fixed;inset:0;background:rgba(6,5,10,.86);z-index:50;display:none;
+    align-items:center;justify-content:center;padding:20px}
+  .modal.show{display:flex}
+  .modal .box{width:min(900px,100%);background:#000;border-radius:12px;overflow:hidden;position:relative}
+  .modal video{width:100%;max-height:80vh;display:block;background:#000}
+  .modal .close{position:absolute;top:-38px;right:0;background:none;border:none;color:#fff;
+    font-size:24px;cursor:pointer;line-height:1}
+  .modal .cap{position:absolute;top:-34px;left:0;color:var(--sub);font-size:12.5px;max-width:80%;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .modal .fallback{padding:40px 20px;text-align:center;color:var(--sub);font-size:13px}
+  .modal .fallback a{color:#8fb8e8}
+
+  @media (max-width:720px){
+    .layout{flex-direction:column;padding:0}
+    .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;position:sticky;top:0;z-index:20;
+      background:var(--bg);border-bottom:1px solid var(--line)}
+    .topbar h1{font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px}
+    .topbar h1 .dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
+    .menubtn{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+      padding:7px 13px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer}
+    .sidebar{position:fixed;right:0;top:0;bottom:0;width:min(300px,86vw);border-radius:0;z-index:40;
+      max-height:100vh;transform:translateX(100%);transition:transform .2s}
+    .sidebar.open{transform:translateX(0)}
+    .backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30}
+    .backdrop.show{display:block}
+    .main{padding:14px}
+  }
+  @media (min-width:721px){ .menubtn,.backdrop{display:none} }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <h1><span class="dot"></span>ゲーム選定ツール</h1>
-  <div class="tag">① 画像で拾う → ② 動画で決める → ③ 本採用。</div>
-</header>
 
 <div id="loader">
+  <h1><span class="dot"></span>ゲーム選定ツール</h1>
   <div class="gist">
     <div class="glabel">Gist ID</div>
     <div class="grow">
       <input id="gid" type="text" placeholder="スクリプトが表示したIDを貼り付け" autocomplete="off" spellcheck="false">
-      <button class="act pri" id="load">更新</button>
+      <button class="sbact pri" id="load" style="width:auto;margin-top:0;padding:11px 18px">更新</button>
     </div>
     <div class="gnote" id="gnote">一度貼れば記憶します。以後は「更新」を押すだけです。</div>
   </div>
 </div>
 
-<div id="app" style="display:none">
-  <div class="steps">
-    <button class="step on" data-step="1">① 画像で拾う<span class="n" id="n1">0本</span></button>
-    <button class="step" data-step="2">② 動画で決める<span class="n" id="n2">0本</span></button>
-    <button class="step" data-step="3">③ 本採用<span class="n" id="n3">0本</span></button>
+<div id="app">
+  <div class="topbar">
+    <h1><span class="dot"></span>ゲーム選定</h1>
+    <button class="menubtn" id="menubtn">≡ 操作</button>
   </div>
+  <div class="backdrop" id="backdrop"></div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sbtitle"><span class="dot"></span>操作</div>
 
-  <div class="controls">
-    <div class="crow" id="filters">
-      <span class="clabel">絞込</span>
-      <button class="chip on" data-f="all">すべて</button>
-      <button class="chip" data-f="demo">体験版</button>
-      <button class="chip" data-f="indie">個人開発</button>
-      <button class="chip" data-f="solo">ソロ可</button>
-      <button class="chip" data-f="soon">発売前</button>
-      <button class="chip" data-f="video">動画あり</button>
-      <button class="chip hidebtn" id="hidebtn">非表示モード</button>
-    </div>
-    <div class="crow" id="genres"><span class="clabel">ジャンル</span></div>
-    <div class="crow">
-      <span class="clabel">並び</span>
-      <button class="chip sort" data-s="default">おすすめ</button>
-      <button class="chip sort on" data-s="date">発売日</button>
-      <button class="chip sort" data-s="rev">レビュー数</button>
-      <button class="chip sort" data-s="price">価格</button>
-      <button class="chip sort" data-s="rank">ランク</button>
-      <button class="chip dir" id="dirbtn">▼ 降順</button>
-      <span class="count" id="count"></span>
-    </div>
-    <div class="hidenote" id="hidenote">非表示モード中：タイルをタップすると非表示の対象になります。薄いタイルは現在非表示のもの（タップで戻せます）。もう一度「非表示モード」を押すと確定します。</div>
+      <div class="sec">
+        <div class="lb">ステップ</div>
+        <div class="steps">
+          <button class="step on" data-step="1">① 画像で拾う<span class="n" id="n1">0</span></button>
+          <button class="step" data-step="2">② 動画で決める<span class="n" id="n2">0</span></button>
+          <button class="step" data-step="3">③ 本採用<span class="n" id="n3">0</span></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="lb">絞り込み</div>
+        <div class="chips" id="filters">
+          <button class="chip" data-f="demo">体験版</button>
+          <button class="chip" data-f="indie">個人開発</button>
+          <button class="chip" data-f="solo">ソロ可</button>
+          <button class="chip" data-f="soon">発売前</button>
+          <button class="chip" data-f="video">動画あり</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="lb">ジャンル（消すと非表示）</div>
+        <div class="chips" id="genres"></div>
+      </div>
+
+      <div class="sec">
+        <div class="lb">並び順</div>
+        <div class="sortline" id="sorts">
+          <button class="chip sort" data-s="default">おすすめ</button>
+          <button class="chip sort on" data-s="date">発売日</button>
+          <button class="chip sort" data-s="rev">レビュー</button>
+          <button class="chip sort" data-s="price">価格</button>
+          <button class="chip sort" data-s="rank">ランク</button>
+          <button class="dirbtn" id="dirbtn">▼ 降順</button>
+        </div>
+      </div>
+
+      <div class="sec" id="hidesec-ctrl">
+        <div class="lb">非表示</div>
+        <button class="hidebtn" id="hidebtn">非表示モード</button>
+        <div class="hidenote" id="hidenote">タイルをタップで非表示対象に。もう一度このボタンで確定。一覧下部の「非表示中」から戻せます。</div>
+      </div>
+
+      <div class="sec">
+        <div class="lb">書き出し・管理</div>
+        <button class="sbact pri" id="ics">採用分を .ics で書き出す</button>
+        <button class="sbact" id="reload">最新を読み直す</button>
+        <button class="sbact" id="clear">判定をリセット</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="mainhead">
+        <span class="t" id="headtitle">画像で拾う</span>
+        <span class="c" id="count"></span>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <div class="hidesec" id="hidesec" style="display:none">
+        <div class="lb" id="hidelb">非表示中</div>
+        <div class="tiles" id="hidetiles"></div>
+      </div>
+    </main>
   </div>
+</div>
 
-  <div class="tiles" id="tiles"></div>
-
-  <div class="acts">
-    <button class="act pri" id="ics">⤓ 採用分を .ics で書き出す</button>
-    <button class="act" id="reload">最新を読み直す</button>
-    <button class="act" id="clear">判定をリセット</button>
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="cap" id="modalcap"></div>
+    <button class="close" id="modalclose">✕</button>
+    <div id="modalbody"></div>
   </div>
-  <div class="hint">判定・非表示・採用はこのブラウザに保存されます。</div>
 </div>
 
 <script>
@@ -173,10 +262,11 @@ const ORDER = {S:5, A:4, B:3, C:2, D:1};
 const KEY = "yuwasu_game_picks_v2";
 const GKEY = "yuwasu_gist_id";
 const GENKEY = "yuwasu_genres_off";
+const STEPTITLE = {1:"画像で拾う", 2:"動画で決める", 3:"本採用"};
 
 let GAMES = [];
 let state = load();
-let step = 1, filter = "all", sort = "date", dir = "desc", hideMode = false;
+let step = 1, filters = new Set(), sort = "date", dir = "desc", hideMode = false;
 let offGenres = new Set(JSON.parse(localStorage.getItem(GENKEY) || "[]"));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
@@ -209,35 +299,47 @@ document.getElementById("load").onclick = async () => {
     if(!GAMES.length) throw new Error("データが空です");
     localStorage.setItem(GKEY, id);
     document.getElementById("loader").classList.add("hidden");
-    document.getElementById("app").style.display = "block";
+    document.getElementById("app").classList.add("show");
     buildGenres();
     render();
   }catch(err){ note("読み込めませんでした: " + err.message, "err"); }
 };
 if(gid.value.trim()) document.getElementById("load").click();
 
-/* ---------- タブ・コントロール ---------- */
+/* ---------- サイドバー開閉（狭い画面） ---------- */
+const sidebar = document.getElementById("sidebar");
+const backdrop = document.getElementById("backdrop");
+function openSidebar(v){ sidebar.classList.toggle("open", v); backdrop.classList.toggle("show", v); }
+document.getElementById("menubtn").onclick = () => openSidebar(!sidebar.classList.contains("open"));
+backdrop.onclick = () => openSidebar(false);
+
+/* ---------- ステップ ---------- */
 document.querySelectorAll(".step").forEach(b => {
   b.onclick = () => { step = +b.dataset.step; hideMode = false; syncHideUI();
-    document.querySelectorAll(".step").forEach(x => x.classList.toggle("on", x===b)); render(); };
+    document.querySelectorAll(".step").forEach(x => x.classList.toggle("on", x===b));
+    document.getElementById("headtitle").textContent = STEPTITLE[step];
+    document.getElementById("hidesec-ctrl").style.display = (step===1) ? "" : "none";
+    openSidebar(false); render(); };
 });
-document.querySelectorAll("#filters .chip[data-f]").forEach(c => {
-  c.onclick = () => { filter = c.dataset.f;
-    document.querySelectorAll("#filters .chip[data-f]").forEach(x => x.classList.toggle("on", x===c)); render(); };
+
+/* ---------- 絞り込み（オンオフ・複数可） ---------- */
+document.querySelectorAll("#filters .chip").forEach(c => {
+  c.onclick = () => {
+    const f = c.dataset.f;
+    if(filters.has(f)) filters.delete(f); else filters.add(f);
+    c.classList.toggle("on", filters.has(f)); render();
+  };
 });
 document.querySelectorAll(".sort").forEach(c => {
   c.onclick = () => { sort = c.dataset.s;
     document.querySelectorAll(".sort").forEach(x => x.classList.toggle("on", x===c)); render(); };
 });
 const dirbtn = document.getElementById("dirbtn");
-dirbtn.onclick = () => { dir = (dir==="desc") ? "asc" : "desc";
+dirbtn.onclick = () => { dir = (dir==="desc")?"asc":"desc";
   dirbtn.textContent = dir==="desc" ? "▼ 降順" : "▲ 昇順"; render(); };
 
 const hidebtn = document.getElementById("hidebtn");
-hidebtn.onclick = () => {
-  if(step !== 1){ alert("非表示は①のタブで使います。"); return; }
-  hideMode = !hideMode; syncHideUI(); render();
-};
+hidebtn.onclick = () => { hideMode = !hideMode; syncHideUI(); render(); };
 function syncHideUI(){
   hidebtn.classList.toggle("on", hideMode);
   hidebtn.textContent = hideMode ? "非表示を確定" : "非表示モード";
@@ -247,17 +349,16 @@ function syncHideUI(){
 function buildGenres(){
   const counts = {};
   GAMES.forEach(g => (g.genres||[]).forEach(x => counts[x] = (counts[x]||0)+1));
-  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]);
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]);
   const box = document.getElementById("genres");
-  box.querySelectorAll(".chip").forEach(x=>x.remove());
+  box.innerHTML = "";
   top.forEach(name => {
     const b = document.createElement("button");
     b.className = "chip g" + (offGenres.has(name) ? "" : " on");
     b.textContent = name;
     b.onclick = () => {
       if(offGenres.has(name)) offGenres.delete(name); else offGenres.add(name);
-      b.classList.toggle("on", !offGenres.has(name));
-      saveGen(); render();
+      b.classList.toggle("on", !offGenres.has(name)); saveGen(); render();
     };
     box.appendChild(b);
   });
@@ -265,50 +366,45 @@ function buildGenres(){
 
 /* ---------- 絞り込み・並べ替え ---------- */
 function passFilter(g){
-  if(filter==="demo" && !g.demo) return false;
-  if(filter==="indie" && !g.self_published) return false;
-  if(filter==="solo" && !g.solo) return false;
-  if(filter==="soon" && !g.coming_soon) return false;
-  if(filter==="video" && !g.trailer) return false;
-  const gs = g.genres||[];
-  if(gs.some(x => offGenres.has(x))) return false;
+  if(filters.has("demo") && !g.demo) return false;
+  if(filters.has("indie") && !g.self_published) return false;
+  if(filters.has("solo") && !g.solo) return false;
+  if(filters.has("soon") && !g.coming_soon) return false;
+  if(filters.has("video") && !g.trailer) return false;
+  if((g.genres||[]).some(x => offGenres.has(x))) return false;
   return true;
 }
 function sortList(list){
   const arr = [...list];
   const m = dir==="desc" ? 1 : -1;
   if(sort==="date"){
-    arr.sort((a,b)=>{
-      const da=a.release_date, db=b.release_date;
-      if(!da && !db) return 0;
-      if(!da) return 1;              // 日付なし（発売前）は常に末尾
-      if(!db) return -1;
-      return da<db ? m : da>db ? -m : 0;
-    });
+    arr.sort((a,b)=>{ const da=a.release_date, db=b.release_date;
+      if(!da && !db) return 0; if(!da) return 1; if(!db) return -1;
+      return da<db ? m : da>db ? -m : 0; });
   }
   else if(sort==="rev") arr.sort((a,b)=>m*((b.recommendations||0)-(a.recommendations||0)));
   else if(sort==="price") arr.sort((a,b)=>m*((b.price||0)-(a.price||0)));
   else if(sort==="rank") arr.sort((a,b)=>m*((ORDER[st(b.appid).rank]||0)-(ORDER[st(a.appid).rank]||0)));
-  else if(dir==="asc") arr.reverse();   // おすすめ順の昇順＝逆順
+  else if(dir==="asc") arr.reverse();
   return arr;
 }
 
-/* ---------- 描画 ---------- */
 function updateCounts(){
   const picked = GAMES.filter(g => st(g.appid).picked && !st(g.appid).hidden);
   const adopted = GAMES.filter(g => st(g.appid).adopted);
-  document.getElementById("n1").textContent = GAMES.length + "本";
-  document.getElementById("n2").textContent = picked.length + "本";
-  document.getElementById("n3").textContent = adopted.length + "本";
+  document.getElementById("n1").textContent = GAMES.length;
+  document.getElementById("n2").textContent = picked.length;
+  document.getElementById("n3").textContent = adopted.length;
 }
+
+/* ---------- 描画 ---------- */
 function render(){
   updateCounts();
-  hidebtn.style.display = (step===1) ? "" : "none";
   const picked = GAMES.filter(g => st(g.appid).picked && !st(g.appid).hidden);
   const adopted = GAMES.filter(g => st(g.appid).adopted);
 
   let base;
-  if(step===1) base = hideMode ? GAMES : GAMES.filter(g => !st(g.appid).hidden);
+  if(step===1) base = GAMES.filter(g => !st(g.appid).hidden);
   else if(step===2) base = picked;
   else base = adopted;
 
@@ -319,22 +415,33 @@ function render(){
   if(!list.length){
     box.innerHTML = '<div class="empty">' +
       (step===2 ? '①で気になったタイルをタップして拾ってください。' :
-       step===3 ? '②で「採用」を押すと、ここに並びます。' : '該当なし') + '</div>';
-    return;
+       step===3 ? '②で「採用する」を押すと、ここに並びます。' : '該当なし') + '</div>';
+  } else {
+    box.innerHTML = list.map(g => tileHTML(g, false)).join("");
   }
-  box.innerHTML = list.map(g => tileHTML(g)).join("");
+
+  // 非表示セクション（①でモード中のみ）
+  const hs = document.getElementById("hidesec");
+  const hidden = GAMES.filter(g => st(g.appid).hidden);
+  if(step===1 && hideMode && hidden.length){
+    hs.style.display = "";
+    document.getElementById("hidelb").textContent = "非表示中（タップで戻す）— " + hidden.length + "本";
+    document.getElementById("hidetiles").innerHTML = hidden.map(g => tileHTML(g, true)).join("");
+  } else {
+    hs.style.display = "none";
+  }
   bindTiles();
 }
 
-function tileHTML(g){
+function tileHTML(g, isHiddenSec){
   const s = st(g.appid);
   const cls = ["tile"];
-  if(step===1 && s.picked && !hideMode) cls.push("picked");
+  if(step===1 && !hideMode && s.picked) cls.push("picked");
   if(s.rank) cls.push("ranked");
-  if(hideMode && s.hidden) cls.push("ghost","markhide");
+  if(step===1 && hideMode && s.hidden && !isHiddenSec) cls.push("markhide");
   const rk = '<span class="rk"' + (s.rank?' style="background:'+RANKS[s.rank]+'"':'') + '>' + (s.rank||"") + '</span>';
   const showVideo = (step===2 || step===3) && g.trailer;
-  const media = '<div class="media" data-trailer="' + esc(showVideo ? g.trailer : "") + '">' +
+  const media = '<div class="media" data-id="'+g.appid+'">' +
     '<img src="' + esc(g.header || g.thumb || "") + '" loading="lazy" onerror="this.style.opacity=.15">' +
     (showVideo ? '<div class="play"></div>' : '') + '</div>';
   const fx = [];
@@ -352,57 +459,58 @@ function tileHTML(g){
         (s.rank===r?' style="background:'+RANKS[r]+';border-color:'+RANKS[r]+'"':'') + '>' + r + '</button>').join("") +
       '</div>' +
       '<div class="adoptrow"><button class="ab' + (s.adopted?' on':'') + '" data-id="' + g.appid + '">' +
-      (s.adopted?'✓ 採用済み':'⭐ 採用する') + '</button></div>';
+      (s.adopted?'採用済み':'採用する') + '</button></div>';
   } else if(step===3){
     extra = '<div class="adoptrow"><button class="ab on" data-id="' + g.appid + '">採用を外す</button></div>';
   }
   const steam = '<div class="steamlink"><a href="' + esc(g.url) + '" target="_blank" rel="noopener">Steam ↗</a></div>';
   return '<div class="' + cls.join(' ') + '" data-id="' + g.appid + '">' +
-    media + rk + '<div class="check">' + (hideMode?'✕':'✓') + '</div>' +
+    media + rk + '<div class="check">' + (step===1&&hideMode?'✕':'✓') + '</div>' +
     '<div class="body"><div class="nm">' + esc(g.name) + '</div><div class="fx">' + fx.join("") + '</div></div>' +
     extra + steam + '</div>';
 }
 
-/* ---------- 動画再生（Safari=直接 / その他=hls.js） ---------- */
-let hlsLoading = null;
-function loadHlsJs(){
-  if(window.Hls) return Promise.resolve();
-  if(hlsLoading) return hlsLoading;
-  hlsLoading = new Promise((ok, ng) => {
-    const sc = document.createElement("script");
-    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js";
-    sc.onload = ok; sc.onerror = ng;
-    document.head.appendChild(sc);
+function findGame(id){ return GAMES.find(g => g.appid === id); }
+
+function bindTiles(){
+  document.querySelectorAll(".steamlink a").forEach(a => a.onclick = e => e.stopPropagation());
+
+  document.querySelectorAll("#tiles > .tile, #hidetiles > .tile").forEach(t => {
+    const id = t.dataset.id;
+    const media = t.querySelector(".media");
+    if(step===1){
+      t.onclick = () => {
+        const s = st(id);
+        if(hideMode){ s.hidden = !s.hidden; }
+        else { s.picked = !s.picked; if(!s.picked) s.rank = null; }
+        save(); render();
+      };
+    } else {
+      if(media){
+        media.onclick = (e) => { e.stopPropagation();
+          const g = findGame(id);
+          if(g && g.trailer) openModal(g);
+        };
+      }
+      t.querySelectorAll(".rb").forEach(b => {
+        b.onclick = (e) => { e.stopPropagation();
+          const s = st(b.dataset.id);
+          s.rank = (s.rank===b.dataset.r)?null:b.dataset.r; save();
+          updateTileRank(t, s); };
+      });
+      t.querySelectorAll(".ab").forEach(b => {
+        b.onclick = (e) => { e.stopPropagation();
+          const s = st(b.dataset.id); s.adopted = !s.adopted; save();
+          if(step===3){ render(); return; }
+          b.classList.toggle("on", s.adopted);
+          b.textContent = s.adopted ? "採用済み" : "採用する";
+          updateCounts(); };
+      });
+    }
   });
-  return hlsLoading;
 }
-function playTrailer(m, url){
-  const img = m.querySelector("img");
-  const poster = img ? img.src : "";
-  const orig = m.innerHTML;
-  const v = document.createElement("video");
-  v.controls = true; v.playsInline = true; v.poster = poster;
-  v.setAttribute("webkit-playsinline","");
-  const fail = () => { m.innerHTML = orig; };
-  const isHls = /\.m3u8/.test(url);
-  if(!isHls || v.canPlayType("application/vnd.apple.mpegurl")){
-    v.src = url;
-    v.onerror = fail;
-    m.innerHTML = ""; m.appendChild(v);
-    v.play().catch(()=>{});
-  } else {
-    loadHlsJs().then(() => {
-      if(!window.Hls || !Hls.isSupported()){ fail(); return; }
-      const h = new Hls();
-      h.on(Hls.Events.ERROR, (ev, data) => { if(data && data.fatal){ h.destroy(); fail(); } });
-      h.loadSource(url); h.attachMedia(v);
-      m.innerHTML = ""; m.appendChild(v);
-      v.play().catch(()=>{});
-    }).catch(fail);
-  }
-}
+
 function updateTileRank(tile, s){
-  if(!tile) return;
   tile.classList.toggle("ranked", !!s.rank);
   const rk = tile.querySelector(".rk");
   if(rk){ rk.textContent = s.rank || ""; rk.style.background = s.rank ? RANKS[s.rank] : ""; }
@@ -412,52 +520,77 @@ function updateTileRank(tile, s){
     x.style.background = on ? RANKS[x.dataset.r] : "";
     x.style.borderColor = on ? RANKS[x.dataset.r] : "";
   });
-  updateCounts();
 }
 
-function bindTiles(){
-  const box = document.getElementById("tiles");
-  // Steamリンクはどのタブでも素通し（タイルのタップを止める）
-  box.querySelectorAll(".steamlink a").forEach(a => a.onclick = e => e.stopPropagation());
+/* ---------- 動画ポップアップ ---------- */
+const modal = document.getElementById("modal");
+const modalbody = document.getElementById("modalbody");
+const modalcap = document.getElementById("modalcap");
+let hlsInst = null, hlsLoading = null;
 
-  if(step===1){
-    box.querySelectorAll(".tile").forEach(t => {
-      t.onclick = () => {
-        const s = st(t.dataset.id);
-        if(hideMode){ s.hidden = !s.hidden; }
-        else { s.picked = !s.picked; if(!s.picked) s.rank = null; }
-        save(); render();
-      };
-    });
+function loadHlsJs(){
+  if(window.Hls) return Promise.resolve();
+  if(hlsLoading) return hlsLoading;
+  hlsLoading = new Promise((ok,ng)=>{ const sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js";
+    sc.onload=ok; sc.onerror=ng; document.head.appendChild(sc); });
+  return hlsLoading;
+}
+function loadDashJs(){
+  if(window.dashjs) return Promise.resolve();
+  return new Promise((ok,ng)=>{ const sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.4/dash.all.min.js";
+    sc.onload=ok; sc.onerror=ng; document.head.appendChild(sc); });
+}
+function fallback(g){
+  modalbody.innerHTML = '<div class="fallback" style="padding:40px 20px;text-align:center;color:var(--sub);font-size:13px">' +
+    'この動画はブラウザで再生できませんでした。<br><br>' +
+    '<a href="' + esc(g.url) + '" target="_blank" rel="noopener" style="color:#8fb8e8">Steamのページで見る ↗</a></div>';
+}
+function openModal(g){
+  modalcap.textContent = g.name;
+  modalbody.innerHTML = "";
+  const v = document.createElement("video");
+  v.controls = true; v.playsInline = true; v.autoplay = true; v.poster = g.thumb || g.header || "";
+  v.setAttribute("webkit-playsinline","");
+  modalbody.appendChild(v);
+  modal.classList.add("show");
+
+  const url = g.trailer, type = g.trailer_type;
+  const nativeHls = v.canPlayType("application/vnd.apple.mpegurl");
+
+  if(type === "mp4"){
+    v.src = url; v.onerror = () => fallback(g); v.play().catch(()=>{});
+  } else if(type === "hls" || /\.m3u8/.test(url)){
+    if(nativeHls){ v.src = url; v.onerror = () => fallback(g); v.play().catch(()=>{}); }
+    else {
+      loadHlsJs().then(()=>{ if(!window.Hls||!Hls.isSupported()){ fallback(g); return; }
+        hlsInst = new Hls();
+        hlsInst.on(Hls.Events.ERROR,(e,d)=>{ if(d&&d.fatal){ hlsInst.destroy(); hlsInst=null; fallback(g);} });
+        hlsInst.loadSource(url); hlsInst.attachMedia(v); v.play().catch(()=>{});
+      }).catch(()=>fallback(g));
+    }
+  } else if(type === "dash"){
+    loadDashJs().then(()=>{ if(!window.dashjs){ fallback(g); return; }
+      const player = dashjs.MediaPlayer().create();
+      player.initialize(v, url, true);
+      player.on("error", ()=>fallback(g));
+      hlsInst = { destroy: ()=>{ try{player.reset();}catch(e){} } };
+    }).catch(()=>fallback(g));
   } else {
-    box.querySelectorAll(".media").forEach(m => {
-      m.onclick = (e) => {
-        e.stopPropagation();
-        const url = m.getAttribute("data-trailer");
-        if(!url || m.querySelector("video")) return;
-        playTrailer(m, url);
-      };
-    });
-    box.querySelectorAll(".rb").forEach(b => {
-      b.onclick = (e) => { e.stopPropagation();
-        const s = st(b.dataset.id);
-        s.rank = (s.rank===b.dataset.r)?null:b.dataset.r; save();
-        updateTileRank(b.closest(".tile"), s);
-      };
-    });
-    box.querySelectorAll(".ab").forEach(b => {
-      b.onclick = (e) => { e.stopPropagation();
-        const s = st(b.dataset.id); s.adopted = !s.adopted; save();
-        if(step===3){ render(); return; }
-        b.classList.toggle("on", s.adopted);
-        b.textContent = s.adopted ? "✓ 採用済み" : "⭐ 採用する";
-        updateCounts();
-      };
-    });
+    v.src = url; v.onerror = () => fallback(g);
   }
 }
+function closeModal(){
+  modal.classList.remove("show");
+  if(hlsInst){ try{hlsInst.destroy();}catch(e){} hlsInst=null; }
+  modalbody.innerHTML = "";
+}
+document.getElementById("modalclose").onclick = closeModal;
+modal.onclick = (e) => { if(e.target === modal) closeModal(); };
+document.addEventListener("keydown", e => { if(e.key==="Escape" && modal.classList.contains("show")) closeModal(); });
 
-/* ---------- 書き出し・その他 ---------- */
+/* ---------- 書き出し・管理 ---------- */
 document.getElementById("ics").onclick = () => {
   const adopted = GAMES.filter(g => st(g.appid).adopted);
   const target = adopted.length ? adopted : GAMES.filter(g => st(g.appid).rank);
@@ -475,7 +608,7 @@ document.getElementById("ics").onclick = () => {
     const desc = ["相性ランク: "+r,"発売日: "+g.release_date,"価格: "+g.price_text,
       "体験版: "+(g.demo?"あり":"なし"),
       "プレイ人数: "+[g.solo?"ソロ可":"",g.coop?"協力":"",g.multi?"マルチ":""].filter(Boolean).join("/"),
-      "開発: "+(g.developers||[]).join(", "),"Steam: "+g.url].join("\\n");
+      "Steam: "+g.url].join("\\n");
     ics += "BEGIN:VEVENT\r\nUID:steam-"+g.appid+"@yuwasu\r\nDTSTAMP:"+stamp+"\r\n";
     ics += "DTSTART;VALUE=DATE:"+d+"\r\nDTEND;VALUE=DATE:"+de+"\r\n";
     ics += "SUMMARY:【"+r+"】"+g.name.replace(/[,;\\]/g,m=>"\\"+m)+"\r\n";
@@ -488,7 +621,7 @@ document.getElementById("ics").onclick = () => {
 };
 document.getElementById("reload").onclick = () => {
   document.getElementById("loader").classList.remove("hidden");
-  document.getElementById("app").style.display = "none";
+  document.getElementById("app").classList.remove("show");
   note("Gist IDを確認して「更新」を押してください。");
 };
 document.getElementById("clear").onclick = () => {
