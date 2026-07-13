@@ -159,7 +159,8 @@
   @media (max-width:720px){
     .layout{flex-direction:column;padding:0}
     .topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;position:sticky;top:0;z-index:20;
-      background:var(--bg);border-bottom:1px solid var(--line)}
+      background:var(--bg);border-bottom:1px solid var(--line);isolation:isolate;
+      -webkit-transform:translateZ(0);transform:translateZ(0)}
     .topbar h1{font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px}
     .topbar h1 .dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
     .menubtn{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
