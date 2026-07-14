@@ -64,7 +64,7 @@
     padding:9px 11px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:left;
     display:flex;align-items:center;gap:7px;transition:.15s}
   .step.on{border-color:var(--amber);color:var(--amber)}
-  .step .n{font-size:11px;font-weight:800;color:var(--amber)}
+  .step .n{font-size:11px;font-weight:800;color:var(--rB)}
 
   .chips{display:flex;flex-wrap:wrap;gap:6px}
   .chip{background:var(--panel2);border:1px solid var(--line);color:var(--sub);
@@ -103,7 +103,7 @@
   .mainhead .c{font-size:11.5px;color:var(--faint)}
   .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
   .tile{background:var(--panel);border:2px solid transparent;border-radius:10px;overflow:hidden;
-    cursor:pointer;transition:.12s;position:relative}
+    cursor:pointer;transition:.12s;position:relative;display:flex;flex-direction:column}
   .tile:hover{border-color:var(--line)}
   .tile.picked{border-color:var(--pick);box-shadow:0 0 0 1px var(--pick)}
   .tile.markhide{border-color:var(--hide);box-shadow:0 0 0 1px var(--hide)}
@@ -130,8 +130,12 @@
   .tile.adopted .check{background:var(--adopt);border-color:var(--adopt);color:#fff}
   .tile.shot{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
   .tile.shot .check{background:var(--amber);border-color:var(--amber);color:#12101a}
-  .tile .steamlink{padding:0 8px 8px;font-size:11px}
-  .tile .steamlink a{color:#8fb8e8;text-decoration:none}
+  .tile .footer{margin-top:auto;display:flex;justify-content:space-between;align-items:center;
+    gap:6px;padding:6px 8px 8px;font-size:11px}
+  .tile .steamlink{color:#8fb8e8;text-decoration:none;white-space:nowrap}
+  .tile .removebtn{background:none;border:none;padding:0;cursor:pointer;
+    color:var(--hide);font-size:11px;font-weight:700;white-space:nowrap}
+  .tile .removebtn:hover{color:#e08a8a}
 
   /* 非表示セクション */
   .hidesec{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
@@ -521,17 +525,30 @@ function tileHTML(g, isHiddenSec){
   fx.push('<span>Rev' + (g.recommendations||0) + '</span>');
   fx.push('<span>' + esc(g.price_text) + '</span>');
   fx.push('<span>' + (g.coming_soon?"発売前":(g.release_date||"?")) + '</span>');
-  const steam = '<div class="steamlink"><a href="' + esc(g.url) + '" target="_blank" rel="noopener">Steam ↗</a></div>';
+  const remove = (step===2 || step===3)
+    ? '<button class="removebtn" data-id="' + g.appid + '">↙ Drop</button>' : '';
+  const footer = '<div class="footer">' +
+    '<a class="steamlink" href="' + esc(g.url) + '" target="_blank" rel="noopener">Steam ↗</a>' +
+    remove + '</div>';
   return '<div class="' + cls.join(' ') + '" data-id="' + g.appid + '">' +
     media + '<div class="check">' + (step===1&&hideMode?'✕':'✓') + '</div>' +
     '<div class="body"><div class="nm">' + esc(g.name) + '</div><div class="fx">' + fx.join("") + '</div></div>' +
-    steam + '</div>';
+    footer + '</div>';
 }
 
 function findGame(id){ return GAMES.find(g => g.appid === id); }
 
 function bindTiles(){
-  document.querySelectorAll(".steamlink a").forEach(a => a.onclick = e => e.stopPropagation());
+  document.querySelectorAll(".steamlink").forEach(a => a.onclick = e => e.stopPropagation());
+
+  document.querySelectorAll(".removebtn").forEach(b => {
+    b.onclick = (e) => { e.stopPropagation();
+      const s = st(b.dataset.id);
+      if(step===2){ s.picked = false; s.adopted = false; s.shot = false; }
+      else { s.adopted = false; s.shot = false; }
+      save(); render();
+    };
+  });
 
   document.querySelectorAll("#tiles > .tile, #hidetiles > .tile").forEach(t => {
     const id = t.dataset.id;
