@@ -133,10 +133,13 @@
   .rb{flex:1;padding:6px 0;border-radius:7px;border:1px solid var(--line);background:var(--panel2);
     color:var(--sub);font-size:12px;font-weight:800;cursor:pointer;transition:.1s}
   .rb.on{color:#12101a}
-  .adoptrow{padding:0 8px 9px}
-  .ab{width:100%;padding:7px 0;border-radius:8px;border:1px solid var(--adopt);background:var(--panel2);
+  .adoptrow{padding:0 8px 9px;display:flex;gap:6px}
+  .ab{flex:1;padding:7px 0;border-radius:8px;border:1px solid var(--adopt);background:var(--panel2);
     color:var(--adopt);font-size:11.5px;font-weight:700;cursor:pointer;transition:.1s}
   .ab.on{background:var(--adopt);color:#12101a}
+  .unpick{flex:1;padding:7px 0;border-radius:8px;border:1px solid var(--line);background:var(--panel2);
+    color:var(--sub);font-size:11.5px;font-weight:700;cursor:pointer;transition:.1s}
+  .unpick:active{background:var(--panel)}
 
   /* 非表示セクション */
   .hidesec{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
@@ -518,7 +521,7 @@ function tileHTML(g, isHiddenSec){
   if(s.rank) cls.push("ranked");
   if(step===1 && hideMode && s.hidden && !isHiddenSec) cls.push("markhide");
   const rk = '<span class="rk"' + (s.rank?' style="background:'+RANKS[s.rank]+'"':'') + '>' + (s.rank||"") + '</span>';
-  const showVideo = (step===2 || step===3) && g.trailer;
+  const showVideo = g.trailer && !(step===1 && hideMode);
   const media = '<div class="media" data-id="'+g.appid+'">' +
     '<img src="' + esc(g.header || g.thumb || "") + '" loading="lazy" onerror="this.style.opacity=.15">' +
     (showVideo ? '<div class="play"></div>' : '') + '</div>';
@@ -537,7 +540,8 @@ function tileHTML(g, isHiddenSec){
         (s.rank===r?' style="background:'+RANKS[r]+';border-color:'+RANKS[r]+'"':'') + '>' + r + '</button>').join("") +
       '</div>' +
       '<div class="adoptrow"><button class="ab' + (s.adopted?' on':'') + '" data-id="' + g.appid + '">' +
-      (s.adopted?'採用済み':'採用する') + '</button></div>';
+      (s.adopted?'採用済み':'採用する') + '</button>' +
+      '<button class="unpick" data-id="' + g.appid + '">確認中から外す</button></div>';
   } else if(step===3){
     extra = '<div class="adoptrow"><button class="ab on" data-id="' + g.appid + '">採用を外す</button></div>';
   }
@@ -557,6 +561,9 @@ function bindTiles(){
     const id = t.dataset.id;
     const media = t.querySelector(".media");
     if(step===1){
+      if(media && !hideMode && findGame(id).trailer){
+        media.onclick = (e) => { e.stopPropagation(); openModal(findGame(id)); };
+      }
       t.onclick = () => {
         const s = st(id);
         if(hideMode){ s.hidden = !s.hidden; }
@@ -583,6 +590,12 @@ function bindTiles(){
           b.classList.toggle("on", s.adopted);
           b.textContent = s.adopted ? "採用済み" : "採用する";
           updateCounts(); };
+      });
+      t.querySelectorAll(".unpick").forEach(b => {
+        b.onclick = (e) => { e.stopPropagation();
+          const s = st(b.dataset.id);
+          s.picked = false; s.rank = null; s.adopted = false;
+          save(); render(); };
       });
     }
   });
